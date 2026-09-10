@@ -1,6 +1,11 @@
-import { LayoutDashboard, Users, Settings, Layers, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Users, Settings, Layers, Newspaper, Contact, GraduationCap, FileText, Building2, type LucideIcon } from "lucide-react";
 import { hasPermission, P } from "@/features/identity";
 import { SAMPLE_P } from "@/features/sample";
+import { NEWS_P } from "@/features/news";
+import { PERSONNEL_P } from "@/features/personnel";
+import { CURRICULUM_P } from "@/features/curriculum";
+import { EDOCS_P } from "@/features/edocs";
+import { FACILITIES_P } from "@/features/facilities";
 
 export interface NavItem {
   /** i18n key */
@@ -16,6 +21,26 @@ export interface NavCrumb { title: string; href: string }
 
 export const sidebarGroups: NavGroup[] = [
   { label: "nav.group.overview", items: [{ title: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard }] },
+  {
+    label: "roles.module.news",
+    items: [{ title: "news.nav", href: "/news", icon: Newspaper, permission: NEWS_P.newsRead }],
+  },
+  {
+    label: "roles.module.personnel",
+    items: [{ title: "personnel.nav", href: "/personnel", icon: Contact, permission: PERSONNEL_P.personnelRead }],
+  },
+  {
+    label: "roles.module.curriculum",
+    items: [{ title: "curriculum.nav", href: "/curriculum", icon: GraduationCap, permission: CURRICULUM_P.curriculumRead }],
+  },
+  {
+    label: "roles.module.edocs",
+    items: [{ title: "edocs.nav", href: "/edocs", icon: FileText, permission: EDOCS_P.edocsRead }],
+  },
+  {
+    label: "roles.module.facilities",
+    items: [{ title: "facilities.nav", href: "/facilities-admin", icon: Building2, permission: FACILITIES_P.facilitiesRead }],
+  },
   {
     label: "nav.group.sample",
     items: [{ title: "sample.nav", href: "/sample", icon: Layers, permission: SAMPLE_P.sampleRead }],
