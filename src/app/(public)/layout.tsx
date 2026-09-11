@@ -3,8 +3,8 @@ import Image from "next/image";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
 import { auth, resolveTenantSettings } from "@/features/identity/server";
-import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { GraduationCap, LogIn, LayoutDashboard } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { PortalNavbar } from "./_components/portal-navbar";
 
 export default async function PublicLayout({
   children,
@@ -19,100 +19,29 @@ export default async function PublicLayout({
   const brandName = settings ? (locale === "th" ? settings.nameTh : settings.nameEn) : t("faculty.name");
   const brandSubtitle = settings ? (locale === "th" ? settings.nameEn : settings.nameTh) : t("faculty.subtitle");
 
+  const navLabels = {
+    home: t("nav.home"),
+    news: t("news.portal.title"),
+    programs: t("curriculum.publicTitle"),
+    staff: t("personnel.portal.title"),
+    requests: t("edocs.publicTitle"),
+    facilities: t("facilities.publicTitle"),
+    dashboard: t("nav.dashboard"),
+    login: locale === "th" ? "เข้าสู่ระบบบุคลากร" : "Staff Login",
+    themeToggle: t("nav.themeToggle"),
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm overflow-hidden p-1">
-                {settings?.logoUrl ? (
-                  <Image
-                    src={settings.logoUrl}
-                    alt={brandName}
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-contain"
-                    unoptimized
-                  />
-                ) : (
-                  <GraduationCap className="h-6 w-6" />
-                )}
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-base leading-tight tracking-tight text-foreground">
-                  {brandName}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {brandSubtitle}
-                </span>
-              </div>
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-              <Link
-                href="/"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("nav.home")}
-              </Link>
-              <Link
-                href="/announcements"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("news.portal.title")}
-              </Link>
-              <Link
-                href="/programs"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("curriculum.publicTitle")}
-              </Link>
-              <Link
-                href="/staff"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("personnel.portal.title")}
-              </Link>
-              <Link
-                href="/requests"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("edocs.publicTitle")}
-              </Link>
-              <Link
-                href="/facilities"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {t("facilities.publicTitle")}
-              </Link>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher className="lang" />
-
-            {session?.user ? (
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-3.5 py-1.5 text-xs sm:text-sm font-medium text-primary-foreground shadow transition hover:bg-primary/90"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                <span>{t("nav.dashboard")}</span>
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-1.5 text-xs sm:text-sm font-medium text-foreground shadow-sm transition hover:bg-accent hover:text-accent-foreground"
-              >
-                <LogIn className="h-4 w-4" />
-                <span>{locale === "th" ? "เข้าสู่ระบบบุคลากร" : "Staff Login"}</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+      <PortalNavbar
+        brandName={brandName}
+        brandSubtitle={brandSubtitle}
+        brandLogo={settings?.logoUrl}
+        locale={locale}
+        sessionUser={session?.user ?? null}
+        navLabels={navLabels}
+      />
 
       {/* Main Content */}
       <main className="flex-1">{children}</main>
