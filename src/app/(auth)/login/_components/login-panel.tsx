@@ -14,6 +14,8 @@ export function LoginPanel({ providers }: { providers: ("google" | "microsoft")[
       <div className="auth-mark"><i><BrandMarkIcon /></i><div><h1>{t("app.name")}</h1></div></div>
       <div className="auth-head"><h2>{t("auth.welcome")}</h2><p>{t("auth.login.subtitle")}</p></div>
       {error === "NoAccount" && <p className="err" role="alert">{t("auth.oauthNoAccount")}</p>}
+      {error === "InactiveAccount" && <p className="err" role="alert">{t("auth.inactiveAccount")}</p>}
+      {error === "NoEmail" && <p className="err" role="alert">{t("auth.oauthNoEmail")}</p>}
       <PasswordLoginForm />
       <div className="auth-foot"><p><Link href="/forgot-password">{t("auth.forgot")}</Link></p></div>
       {providers.length > 0 && (

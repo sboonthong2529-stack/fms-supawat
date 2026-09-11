@@ -22,6 +22,8 @@ export const MESSAGES: Dictionary = {
   "auth.provider.google": { th: "Google", en: "Google" },
   "auth.provider.microsoft": { th: "Microsoft", en: "Microsoft" },
   "auth.oauthNoAccount": { th: "ไม่พบบัญชีนี้ในระบบ กรุณาติดต่อผู้ดูแล", en: "No account found for this email. Contact your administrator." },
+  "auth.inactiveAccount": { th: "บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ", en: "This account has been deactivated. Contact your administrator." },
+  "auth.oauthNoEmail": { th: "ไม่สามารถระบุอีเมลจากบัญชีที่เข้าสู่ระบบได้", en: "Could not retrieve email from authentication provider." },
   "auth.backToLogin": { th: "กลับไปหน้าเข้าสู่ระบบ", en: "Back to sign in" },
   "forgot.title": { th: "ลืมรหัสผ่าน", en: "Forgot password" },
   "forgot.desc": { th: "กรอกอีเมลที่ใช้เข้าระบบ ถ้ามีบัญชีนี้ระบบจะส่งลิงก์ตั้งรหัสผ่านใหม่ให้", en: "Enter your sign-in email. If an account exists we'll send a reset link." },

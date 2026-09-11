@@ -65,18 +65,96 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    /** OAuth: ต้องมีบัญชีอยู่ก่อน (แอดมินสร้าง) ไม่สร้างอัตโนมัติ */
+    /** OAuth: รองรับทั้งผู้ใช้เดิม และสร้างบัญชีให้อัตโนมัติ (Auto-Provisioning) สำหรับทุกคน */
     async signIn({ user, account }) {
       if (!account || account.provider === "credentials") return true;
       const providerKey: OAuthProviderId = account.provider === "microsoft-entra-id" ? "microsoft" : "google";
-      if (!user.email) return "/login?error=NoAccount";
-      const existing = await prisma.user.findUnique({ where: { email: user.email.toLowerCase() } });
-      if (!existing || !existing.isActive) return "/login?error=NoAccount";
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { provider: providerKey, providerId: account.providerAccountId, imageUrl: user.image ?? existing.imageUrl, lastLoginAt: new Date() },
+      const email = user.email?.toLowerCase();
+      if (!email) return "/login?error=NoEmail";
+
+      const existing = await prisma.user.findUnique({ where: { email } });
+
+      if (existing) {
+        if (!existing.isActive) return "/login?error=InactiveAccount";
+
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: {
+            provider: providerKey,
+            providerId: account.providerAccountId,
+            imageUrl: user.image ?? existing.imageUrl,
+            lastLoginAt: new Date(),
+          },
+        });
+
+        // หากยังไม่มี UserTenant ให้ผูกกับ Tenant ปัจจุบัน
+        const existingUt = await prisma.userTenant.findFirst({
+          where: { userId: existing.id, isActive: true },
+        });
+        if (!existingUt) {
+          const tenant = await prisma.tenant.findFirst({ where: { isActive: true }, orderBy: { createdAt: "asc" } });
+          if (tenant) {
+            const ut = await prisma.userTenant.create({ data: { userId: existing.id, tenantId: tenant.id, isActive: true } });
+            const defaultRole =
+              (await prisma.role.findFirst({ where: { tenantId: tenant.id, code: "VIEWER" } })) ||
+              (await prisma.role.findFirst({ where: { tenantId: tenant.id }, orderBy: { createdAt: "asc" } }));
+            if (defaultRole) {
+              await prisma.userRole.create({ data: { userTenantId: ut.id, roleId: defaultRole.id, scopeType: "ALL" } });
+            }
+          }
+        }
+
+        user.id = existing.id;
+        return true;
+      }
+
+      // สร้างบัญชีใหม่ให้อัตโนมัติสำหรับทุกคนที่มีบัญชี Google
+      const tenant = await prisma.tenant.findFirst({
+        where: { isActive: true },
+        orderBy: { createdAt: "asc" },
       });
-      user.id = existing.id;
+      if (!tenant) return "/login?error=NoTenant";
+
+      const defaultRole =
+        (await prisma.role.findFirst({ where: { tenantId: tenant.id, code: "VIEWER" } })) ||
+        (await prisma.role.findFirst({ where: { tenantId: tenant.id }, orderBy: { createdAt: "asc" } }));
+
+      const newUser = await prisma.$transaction(async (tx) => {
+        const u = await tx.user.create({
+          data: {
+            email,
+            name: user.name || email.split("@")[0],
+            imageUrl: user.image ?? null,
+            provider: providerKey,
+            providerId: account.providerAccountId,
+            emailVerified: true,
+            isActive: true,
+            lastLoginAt: new Date(),
+          },
+        });
+
+        const ut = await tx.userTenant.create({
+          data: {
+            userId: u.id,
+            tenantId: tenant.id,
+            isActive: true,
+          },
+        });
+
+        if (defaultRole) {
+          await tx.userRole.create({
+            data: {
+              userTenantId: ut.id,
+              roleId: defaultRole.id,
+              scopeType: "ALL",
+            },
+          });
+        }
+
+        return u;
+      });
+
+      user.id = newUser.id;
       return true;
     },
 
