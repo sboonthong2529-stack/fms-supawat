@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   Sparkles,
-  Bot,
   GraduationCap,
-  TrendingUp,
-  FileCheck,
+  Moon,
+  Heart,
+  Sun,
   Compass,
   LayoutDashboard,
   LogIn,
   Award,
   CheckCircle2,
+  Flower2,
 } from "lucide-react";
 
 export interface PortalHeroProps {
   locale: string;
+  brandName: string;
+  brandLogo?: string | null;
   isLoggedIn?: boolean;
   navLabels: {
     announcements: string;
@@ -30,103 +33,85 @@ export interface PortalHeroProps {
 
 export function PortalHero({
   locale,
+  brandName,
+  brandLogo,
   isLoggedIn = false,
   navLabels,
 }: PortalHeroProps) {
   const isThai = locale === "th";
 
-  // Interactive 3D tilt calculations for the central showcase card
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0, active: false });
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Calculate rotation (-10 to 10 deg)
-    const rotateY = ((mouseX / width) - 0.5) * 16;
-    const rotateX = ((mouseY / height) - 0.5) * -16;
-
-    setTilt({ x: rotateX, y: rotateY, active: true });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({ x: 0, y: 0, active: false });
-  }, []);
-
-  // Marquee items
+  // Sunset Marquee Items (Digital Naturalism & Human-Centric Philosophy)
   const marqueeItems = [
-    isThai ? "✦ นวัตกรรมปัญญาประดิษฐ์และวิทยาการข้อมูล (AI & Data Science)" : "✦ AI & Data Science Innovations",
-    isThai ? "✦ การจัดการธุรกิจดิจิทัลอัจฉริยะ (Smart Business)" : "✦ Smart Digital Business Ecosystem",
-    isThai ? "✦ การเงินดิจิทัลและเทคโนโลยีบล็อกเชน (FinTech Lab)" : "✦ FinTech & Web3 Technologies",
-    isThai ? "✦ โลจิสติกส์และการจัดการซัพพลายเชนแห่งอนาคต" : "✦ Next-Gen Logistics & Supply Chain",
-    isThai ? "✦ วิจัยชั้นนำระดับนานาชาติ (Global Research)" : "✦ World-Class Research Publications",
-    isThai ? "✦ ผลิตบัณฑิตคุณภาพสูงตอบสนองตลาดโลก" : "✦ Global Ready Graduates",
-    isThai ? "✦ รับรองมาตรฐานคุณภาพการศึกษา 100%" : "✦ 100% Accredited Academic Standards",
+    isThai ? "✦ นวัตกรรมการเรียนรู้ที่อบอุ่นและยั่งยืน (Human-Centric Innovation)" : "✦ Human-Centric Educational Innovation",
+    isThai ? "✦ สมดุลแห่งชีวิตและปัญญา (Balanced Living & Wisdom)" : "✦ Balanced Living & Creative Wisdom",
+    isThai ? "✦ ชุมชนวิชาการที่สร้างสรรค์และเปี่ยมสุขภาวะ" : "✦ Inspiring & Flourishing Academic Community",
+    isThai ? "✦ เทคโนโลยีดิจิทัลที่เข้าถึงง่ายและเป็นมิตร" : "✦ Calm, Accessible & Thoughtful Technology",
+    isThai ? "✦ การศึกษาเพื่อการพัฒนาที่ยั่งยืนระดับสากล" : "✦ Sustainable & World-Class Education",
+    isThai ? "✦ บ่มเพาะศักยภาพบัณฑิตด้วยความอบอุ่นและเอาใจใส่" : "✦ Nurturing Tomorrow's Visionary Leaders",
+    isThai ? "✦ รับรองมาตรฐานคุณภาพการศึกษาระดับดีเยี่ยม 100%" : "✦ 100% Accredited Academic Excellence",
   ];
 
   return (
-    <div className="relative overflow-hidden pt-8 md:pt-14 pb-12 border-b border-[var(--glass-border)] bg-gradient-to-b from-[var(--surface-sunken)]/60 via-background to-background">
-      {/* Ambient background lights (Glow Mesh) */}
+    <div className="relative overflow-hidden pt-10 md:pt-16 pb-14 border-b border-[var(--glass-border)] bg-gradient-to-b from-amber-500/10 via-rose-500/5 to-background dark:from-amber-500/15 dark:via-rose-950/20 dark:to-background">
+      {/* ═══ Sunset Atmospheric Glow (Golden Hour / Digital Naturalism) ═══ */}
+      {/* Golden Sun Orb in center background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-[560px] w-[900px] max-w-full rounded-full bg-gradient-to-tr from-[var(--brand)]/20 via-indigo-500/15 to-cyan-400/20 blur-[120px] opacity-70 animate-hero-pulse-glow"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-36 right-[-10%] h-[380px] w-[450px] rounded-full bg-purple-500/15 blur-[100px] opacity-60"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-48 left-[-10%] h-[350px] w-[420px] rounded-full bg-[var(--brand-light)]/15 blur-[100px] opacity-50"
+        className="pointer-events-none absolute top-12 left-1/2 -translate-x-1/2 h-[560px] w-[900px] max-w-full rounded-full bg-gradient-to-tr from-amber-400/35 via-rose-400/25 to-purple-500/20 blur-[130px] opacity-80 animate-sunset-glow"
       />
 
-      {/* Tech Grid Pattern */}
+      {/* Radiant Peach/Coral side orb */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.06] [background-image:radial-gradient(rgba(0,0,0,0.8)_1px,transparent_1px)] dark:[background-image:radial-gradient(rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)]"
+        className="pointer-events-none absolute top-32 right-[-5%] h-[420px] w-[500px] rounded-full bg-gradient-to-br from-rose-400/20 to-amber-300/15 blur-[110px] opacity-70"
+      />
+
+      {/* Lavender Twilight side orb */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-40 left-[-8%] h-[400px] w-[480px] rounded-full bg-gradient-to-br from-purple-400/20 via-indigo-300/15 to-rose-300/10 blur-[110px] opacity-65"
+      />
+
+      {/* Soft Sunset Ripple Wave */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-[12%] -translate-y-1/2 h-[450px] w-[450px] rounded-full border border-amber-400/20 dark:border-amber-300/10 animate-sunset-ripple"
       />
 
       {/* Main Container */}
       <div className="relative mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center min-h-[580px]">
-          {/* Left Column: Hero Text & Value Proposition (7 cols on lg) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center min-h-[590px]">
+          {/* ═══ Left Column: Editorial & Human-Centric Narrative (7 cols on lg) ═══ */}
           <div className="lg:col-span-7 space-y-7 z-10 text-center lg:text-left">
-            {/* Pill Announcement Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand)]/30 bg-[var(--brand)]/10 px-4 py-1.5 text-xs font-semibold text-[var(--brand)] shadow-sm backdrop-blur-md">
+            {/* Sunset Pill Announcement Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/35 dark:border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-purple-500/15 px-4 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 shadow-sm backdrop-blur-md">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
               </span>
-              <Sparkles className="h-3.5 w-3.5 text-[var(--brand)]" />
+              <Flower2 className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
               <span className="tracking-wide">
                 {isThai
-                  ? "เปิดรับสมัครนักศึกษาใหม่ ประจำปีการศึกษา 2569"
-                  : "Now Accepting Applications for Academic Year 2026"}
+                  ? "นวัตกรรมการเรียนรู้ที่อบอุ่นและสร้างสรรค์ (Human-Centric Ecosystem)"
+                  : "Human-Centric Technology & Warm Educational Ecosystem"}
               </span>
             </div>
 
-            {/* High-Impact Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.12]">
+            {/* Poetic & Elegant Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.14]">
               {isThai ? (
                 <>
-                  ขับเคลื่อนสู่อนาคตด้วย{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] via-indigo-500 to-cyan-500 dark:via-indigo-400 dark:to-cyan-400">
-                    นวัตกรรมดิจิทัล
-                  </span>{" "}
-                  และวิทยาการอัจฉริยะ
+                  เทคโนโลยีการศึกษาที่อบอุ่น{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 dark:from-amber-400 dark:via-rose-400 dark:to-purple-300">
+                    ดั่งแสงตะวันยามเย็น
+                  </span>
                 </>
               ) : (
                 <>
-                  Pioneering the Future with{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand)] via-indigo-500 to-cyan-500 dark:via-indigo-400 dark:to-cyan-400">
-                    Intelligent Digital
-                  </span>{" "}
-                  & AI Innovations
+                  Educational Innovation That{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 dark:from-amber-400 dark:via-rose-400 dark:to-purple-300">
+                    Feels Like a Sunset
+                  </span>
                 </>
               )}
             </h1>
@@ -134,15 +119,15 @@ export function PortalHero({
             {/* Sub-headline */}
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
               {isThai
-                ? "ศูนย์กลางการศึกษา วิจัย และนวัตกรรมเทคโนโลยีชั้นนำ บ่มเพาะบัณฑิตสู่ผู้นำยุคใหม่ด้วยหลักสูตรมาตรฐานสากล พร้อมโครงสร้างพื้นฐานดิจิทัลและระบบนิเวศแห่งอนาคต"
-                : "A world-class hub for digital education, cutting-edge research, and technological innovation. Empowering the next generation of visionary leaders with globally accredited curricula."}
+                ? "ผสานเทคโนโลยีดิจิทัลล้ำสมัย เข้ากับความสุข สุขภาวะ และความอบอุ่นของชุมชนการศึกษา บ่มเพาะศักยภาพบัณฑิตด้วยสมดุลแห่งชีวิตและปัญญา พร้อมก้าวสู่อนาคตอย่างมั่นใจและสง่างาม"
+                : "Where cutting-edge technology meets calm, sustainable growth. Nurturing tomorrow's visionary leaders in an inspiring digital ecosystem designed for human well-being and boundless potential."}
             </p>
 
-            {/* Call to Action Buttons */}
+            {/* Call to Action Buttons (Sunset Warmth Pill & Frosted Glass) */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
               <Link
                 href="/programs"
-                className="group relative inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[var(--brand)] to-[var(--brand-light)] px-6 py-3.5 text-sm font-bold text-[var(--on-brand)] shadow-lg shadow-[var(--brand)]/25 hover:shadow-[var(--brand)]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="group relative inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-600 hover:via-orange-600 hover:to-rose-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 <Compass className="h-4 w-4" />
                 <span>{navLabels.programs}</span>
@@ -151,7 +136,7 @@ export function PortalHero({
 
               <Link
                 href="/announcements"
-                className="inline-flex items-center gap-2 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass)] hover:bg-[var(--glass-strong)] backdrop-blur-md px-5 py-3.5 text-sm font-semibold text-foreground shadow-sm hover:border-[var(--brand)]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="inline-flex items-center gap-2 rounded-full border border-white/40 dark:border-white/15 bg-white/30 dark:bg-white/5 hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-xl px-6 py-3.5 text-sm font-semibold text-foreground shadow-sm hover:border-amber-400/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 <span>{navLabels.announcements}</span>
               </Link>
@@ -159,31 +144,31 @@ export function PortalHero({
               {isLoggedIn ? (
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-2xl border border-transparent bg-white/5 hover:bg-white/10 px-4 py-3.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
+                  className="inline-flex items-center gap-2 rounded-full border border-transparent bg-white/10 hover:bg-white/20 px-5 py-3.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
                 >
-                  <LayoutDashboard className="h-4 w-4 text-[var(--brand)]" />
+                  <LayoutDashboard className="h-4 w-4 text-amber-500" />
                   <span>{navLabels.dashboard}</span>
                 </Link>
               ) : (
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 rounded-2xl border border-transparent bg-white/5 hover:bg-white/10 px-4 py-3.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
+                  className="inline-flex items-center gap-2 rounded-full border border-transparent bg-white/10 hover:bg-white/20 px-5 py-3.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
                 >
-                  <LogIn className="h-4 w-4 text-[var(--brand)]" />
+                  <LogIn className="h-4 w-4 text-amber-500" />
                   <span>{navLabels.login}</span>
                 </Link>
               )}
             </div>
 
-            {/* Trust & Social Proof Strip */}
+            {/* Trust & Tranquility Strip */}
             <div className="pt-4 border-t border-[var(--glass-border)]/60 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
                   {[
-                    "bg-gradient-to-br from-blue-500 to-indigo-600",
-                    "bg-gradient-to-br from-emerald-500 to-teal-600",
-                    "bg-gradient-to-br from-purple-500 to-pink-600",
-                    "bg-gradient-to-br from-amber-500 to-orange-600",
+                    "bg-gradient-to-br from-amber-400 to-orange-500",
+                    "bg-gradient-to-br from-rose-400 to-pink-500",
+                    "bg-gradient-to-br from-purple-400 to-indigo-500",
+                    "bg-gradient-to-br from-teal-400 to-emerald-500",
                   ].map((bg, idx) => (
                     <div
                       key={idx}
@@ -196,7 +181,7 @@ export function PortalHero({
                 <div>
                   <span className="font-bold text-foreground">10,000+</span>
                   <span className="ml-1">
-                    {isThai ? "ศิษย์เก่า & นักศึกษา" : "Students & Alumni"}
+                    {isThai ? "ศิษย์เก่า & ชุมชนผู้เรียน" : "Learners & Alumni"}
                   </span>
                 </div>
               </div>
@@ -206,184 +191,154 @@ export function PortalHero({
               <div className="flex items-center gap-1.5">
                 <Award className="h-4 w-4 text-amber-500" />
                 <span className="font-bold text-foreground">100%</span>
-                <span>{isThai ? "รับรองมาตรฐานสากล" : "Accredited"}</span>
+                <span>{isThai ? "รับรองมาตรฐานการศึกษา" : "Accredited Excellence"}</span>
               </div>
 
               <div className="h-3.5 w-px bg-border/60 hidden sm:block" />
 
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                <CheckCircle2 className="h-4 w-4 text-rose-500" />
                 <span>
-                  {isThai ? "ประเมินคุณภาพระดับดีเยี่ยม" : "Excellence Rating"}
+                  {isThai ? "สุขภาวะและคุณภาพชีวิตระดับดีเยี่ยม" : "Holistic Student Well-being"}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: AICM 3D Animation & Floating Icons Showcase (5 cols on lg) */}
-          <div
-            className="lg:col-span-5 relative flex items-center justify-center min-h-[460px] lg:min-h-[520px] select-none"
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{ perspective: "1100px" }}
-          >
-            {/* Central 3D Interactive Card */}
-            <div
-              className="relative w-full max-w-[420px] rounded-3xl border border-white/25 dark:border-white/10 bg-gradient-to-b from-white/30 via-white/15 to-white/5 dark:from-white/10 dark:via-white/5 dark:to-transparent backdrop-blur-2xl p-7 shadow-2xl transition-transform duration-200 ease-out"
-              style={{
-                transform: tilt.active
-                  ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(10px)`
-                  : "rotateX(0deg) rotateY(0deg)",
-                transformStyle: "preserve-3d",
-              }}
-            >
-              {/* Card Window Header */}
-              <div className="flex items-center justify-between pb-5 border-b border-white/15 dark:border-white/10">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-400/80 shadow-sm" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80 shadow-sm" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 shadow-sm" />
+          {/* ═══ Right Column: Sunset Arch Portal Featuring the Uploaded Logo (5 cols on lg) ═══ */}
+          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[480px] lg:min-h-[530px] select-none">
+            {/* Centerpiece: Elegant Sunset Arch Portal */}
+            <div className="relative w-full max-w-[420px] rounded-[44px] border border-white/40 dark:border-white/15 bg-gradient-to-b from-white/35 via-white/15 to-white/5 dark:from-white/15 dark:via-white/5 dark:to-transparent backdrop-blur-2xl p-8 sm:p-10 shadow-2xl shadow-rose-950/10 flex flex-col items-center text-center">
+              {/* Top Arch Label / Zen Header */}
+              <div className="flex items-center justify-between w-full pb-4 border-b border-white/20 dark:border-white/10">
+                <div className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  <Sun className="h-3.5 w-3.5" />
+                  <span className="tracking-widest uppercase text-[10px]">GOLDEN HOUR</span>
                 </div>
-                <span className="text-[11px] font-mono font-medium tracking-wider text-muted-foreground uppercase">
-                  FACULTY OS // v2.6
-                </span>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>ONLINE</span>
+                <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse" />
+                  <span>TRANQUIL</span>
                 </div>
               </div>
 
-              {/* 3D Central Graphic (Holographic Core with Orbiting Rings) */}
-              <div className="relative h-64 flex items-center justify-center my-2">
-                {/* Background Glow inside Card */}
-                <div className="absolute h-44 w-44 rounded-full bg-gradient-to-tr from-[var(--brand)]/30 to-cyan-400/30 blur-2xl opacity-60" />
+              {/* Radiant Sunset Backdrop behind the Logo */}
+              <div className="relative my-6 flex items-center justify-center h-64 w-full">
+                {/* Glowing Setting Sun Disk */}
+                <div className="absolute h-48 w-48 rounded-full bg-gradient-to-tr from-amber-400/40 via-rose-400/35 to-purple-400/20 blur-xl opacity-90 animate-sunset-glow" />
 
-                {/* Outer Orbiting Ring 1 */}
-                <div className="absolute h-56 w-56 rounded-full border border-dashed border-[var(--brand)]/30 dark:border-[var(--brand-light)]/25 animate-hero-orbit pointer-events-none">
-                  {/* Orbiting Satellite Node */}
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-5 w-5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 p-0.5 shadow-lg shadow-cyan-500/50 flex items-center justify-center text-white">
-                    <Sparkles className="h-3 w-3" />
-                  </div>
-                </div>
+                {/* Soft Orbiting Golden Rings */}
+                <div className="absolute h-60 w-60 rounded-full border border-dashed border-amber-300/40 dark:border-amber-400/25 pointer-events-none animate-hero-float-1" />
+                <div className="absolute h-52 w-52 rounded-full border border-rose-300/30 dark:border-rose-400/20 pointer-events-none animate-hero-float-2" />
 
-                {/* Outer Orbiting Ring 2 (Reversed & Elliptical) */}
-                <div
-                  className="absolute h-48 w-48 rounded-full border border-white/20 dark:border-white/10 animate-hero-orbit-reverse pointer-events-none"
-                  style={{ transform: "rotateX(60deg)" }}
-                >
-                  <div className="absolute -bottom-2 right-6 h-4 w-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-0.5 shadow-lg shadow-purple-500/50" />
-                </div>
+                {/* 🌟 The Uploaded Logo Centerpiece 🌟 */}
+                <div className="relative z-10 h-36 w-36 sm:h-40 sm:w-40 rounded-[32px] bg-gradient-to-br from-white/60 via-white/30 to-white/10 dark:from-white/25 dark:via-white/10 dark:to-white/5 border border-white/60 dark:border-white/25 shadow-2xl backdrop-blur-xl flex items-center justify-center p-5 group hover:scale-105 transition-transform duration-500">
+                  {brandLogo ? (
+                    <div className="relative h-full w-full flex items-center justify-center">
+                      <Image
+                        src={brandLogo}
+                        alt={brandName}
+                        width={140}
+                        height={140}
+                        className="h-full w-full object-contain filter drop-shadow-[0_12px_20px_rgba(249,115,22,0.3)] transition-transform duration-300"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-amber-600 dark:text-amber-400 drop-shadow-md">
+                      <GraduationCap className="h-16 w-16 mb-1" />
+                      <span className="text-[10px] font-bold tracking-widest uppercase opacity-80">
+                        {brandName}
+                      </span>
+                    </div>
+                  )}
 
-                {/* Central 3D Core Sphere / Emblem */}
-                <div className="relative z-10 h-32 w-32 rounded-3xl bg-gradient-to-br from-[var(--brand)] via-indigo-600 to-cyan-600 p-1 shadow-2xl shadow-[var(--brand)]/40 hover:scale-105 transition-transform duration-300">
-                  <div className="h-full w-full rounded-[22px] bg-gradient-to-tr from-black/40 via-transparent to-white/30 backdrop-blur-sm flex flex-col items-center justify-center p-3 text-white text-center">
-                    <GraduationCap className="h-10 w-10 drop-shadow-md text-white mb-1" />
-                    <span className="text-[11px] font-black tracking-wider uppercase drop-shadow">
-                      DIGITAL
-                    </span>
-                    <span className="text-[9px] opacity-80 font-mono">
-                      EXCELLENCE
-                    </span>
-                  </div>
-
-                  {/* Specular Highlight Sheen on Sphere */}
-                  <div className="absolute top-2 left-3 h-10 w-10 rounded-full bg-white/30 blur-[6px] pointer-events-none" />
+                  {/* Sunset Specular Sheen on Pedestal */}
+                  <div className="absolute top-2 left-3 h-10 w-10 rounded-full bg-white/40 blur-[8px] pointer-events-none" />
                 </div>
               </div>
 
-              {/* Bottom Mini Metrics inside Card */}
-              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/15 dark:border-white/10 text-center">
-                <div className="p-2 rounded-xl bg-white/10 dark:bg-white/5 border border-white/10">
-                  <div className="text-base font-black text-foreground">12+</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {isThai ? "หลักสูตร" : "Programs"}
-                  </div>
-                </div>
-                <div className="p-2 rounded-xl bg-white/10 dark:bg-white/5 border border-white/10">
-                  <div className="text-base font-black text-foreground">80+</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {isThai ? "คณาจารย์" : "Faculty"}
-                  </div>
-                </div>
-                <div className="p-2 rounded-xl bg-white/10 dark:bg-white/5 border border-white/10">
-                  <div className="text-base font-black text-emerald-500">100%</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {isThai ? "มาตรฐาน" : "Accredited"}
-                  </div>
-                </div>
+              {/* Brand Title & Zen Statement below Logo */}
+              <div className="space-y-1 pt-2 border-t border-white/20 dark:border-white/10 w-full">
+                <h3 className="font-bold text-base text-foreground tracking-tight">
+                  {brandName}
+                </h3>
+                <p className="text-xs text-muted-foreground font-medium">
+                  {isThai
+                    ? "สมดุลแห่งนวัตกรรมและการเรียนรู้ที่เปี่ยมสุข"
+                    : "Calm, Inspiring & Human-Centric Growth"}
+                </p>
               </div>
             </div>
 
-            {/* ═══ 4 AICM-Style Floating 3D Micro-Cards ═══ */}
+            {/* ═══ 4 Lunera-Style Floating Glass Panels (Softness instead of stats) ═══ */}
 
-            {/* Floating Card 1: Top-Left (AI Assistant) */}
-            <div className="absolute -top-4 -left-4 sm:-left-8 z-20 animate-hero-float-1 pointer-events-auto">
-              <div className="flex items-center gap-3 rounded-2xl border border-white/30 dark:border-white/15 bg-card/85 backdrop-blur-xl px-3.5 py-2.5 shadow-xl shadow-black/10 hover:scale-105 transition-transform duration-200">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/30 flex-shrink-0">
-                  <Bot className="h-5 w-5" />
+            {/* Panel 1: Top-Left (Campus Rhythm) */}
+            <div className="absolute -top-3 -left-3 sm:-left-8 z-20 animate-hero-float-1 pointer-events-auto">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/40 dark:border-white/15 bg-card/85 backdrop-blur-xl px-4 py-2.5 shadow-xl shadow-rose-950/10 hover:scale-105 transition-transform duration-200">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-purple-500/30 flex-shrink-0">
+                  <Moon className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-bold text-foreground leading-tight flex items-center gap-1.5">
-                    <span>AI Assistant</span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Campus Rhythm</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {isThai ? "พร้อมตอบคำถาม 24/7" : "Active & Ready"}
+                    {isThai ? "จังหวะการเรียนรู้ที่สมดุล" : "Balanced Learning"}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Floating Card 2: Top-Right (Admissions 2569) */}
-            <div className="absolute -top-6 -right-2 sm:-right-6 z-20 animate-hero-float-2 pointer-events-auto">
-              <div className="flex items-center gap-3 rounded-2xl border border-white/30 dark:border-white/15 bg-card/85 backdrop-blur-xl px-3.5 py-2.5 shadow-xl shadow-black/10 hover:scale-105 transition-transform duration-200">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[var(--brand)] to-purple-600 flex items-center justify-center text-white shadow-md shadow-[var(--brand)]/30 flex-shrink-0">
-                  <GraduationCap className="h-5 w-5" />
+            {/* Panel 2: Top-Right (Student Well-being) */}
+            <div className="absolute -top-5 -right-2 sm:-right-6 z-20 animate-hero-float-2 pointer-events-auto">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/40 dark:border-white/15 bg-card/85 backdrop-blur-xl px-4 py-2.5 shadow-xl shadow-rose-950/10 hover:scale-105 transition-transform duration-200">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-rose-500/30 flex-shrink-0">
+                  <Heart className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-black text-foreground">98.6%</span>
+                    <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold bg-rose-500/10 px-1 rounded">
+                      Joy & Success
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">
+                    {isThai ? "ความสุขและความสำเร็จ" : "Student Well-being"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Panel 3: Bottom-Right (Admissions 2026) */}
+            <div className="absolute -bottom-5 -right-2 sm:-right-6 z-20 animate-hero-float-3 pointer-events-auto">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/40 dark:border-white/15 bg-card/85 backdrop-blur-xl px-4 py-2.5 shadow-xl shadow-rose-950/10 hover:scale-105 transition-transform duration-200">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-amber-500/30 flex-shrink-0">
+                  <Sun className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-bold text-foreground leading-tight">
                     {isThai ? "รับสมัคร TCAS 69" : "Admissions 2026"}
                   </span>
-                  <span className="text-[10px] font-semibold text-[var(--brand)]">
-                    {isThai ? "เปิดรับสมัครแล้ว" : "Now Open"}
+                  <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                    {isThai ? "ก้าวสู่อนาคตที่สดใส" : "Embrace the Future"}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Floating Card 3: Bottom-Right (Employment Rate) */}
-            <div className="absolute -bottom-6 -right-3 sm:-right-8 z-20 animate-hero-float-3 pointer-events-auto">
-              <div className="flex items-center gap-3 rounded-2xl border border-white/30 dark:border-white/15 bg-card/85 backdrop-blur-xl px-4 py-2.5 shadow-xl shadow-black/10 hover:scale-105 transition-transform duration-200">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/30 flex-shrink-0">
-                  <TrendingUp className="h-5 w-5" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-foreground">98.6%</span>
-                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-1 rounded">
-                      +4.2%
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">
-                    {isThai ? "ได้งานทำทันที" : "Employment Rate"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Floating Card 4: Bottom-Left (Smart E-Services) */}
-            <div className="absolute -bottom-5 -left-3 sm:-left-6 z-20 animate-hero-float-4 pointer-events-auto">
-              <div className="flex items-center gap-3 rounded-2xl border border-white/30 dark:border-white/15 bg-card/85 backdrop-blur-xl px-3.5 py-2.5 shadow-xl shadow-black/10 hover:scale-105 transition-transform duration-200">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/30 flex-shrink-0">
-                  <FileCheck className="h-5 w-5" />
+            {/* Panel 4: Bottom-Left (Digital Harmony) */}
+            <div className="absolute -bottom-4 -left-3 sm:-left-6 z-20 animate-hero-float-4 pointer-events-auto">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/40 dark:border-white/15 bg-card/85 backdrop-blur-xl px-4 py-2.5 shadow-xl shadow-rose-950/10 hover:scale-105 transition-transform duration-200">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-teal-500/30 flex-shrink-0">
+                  <Sparkles className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-bold text-foreground leading-tight">
-                    Smart E-Docs
+                    Digital Harmony
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {isThai ? "คำร้องออนไลน์ 100%" : "100% Digital Flow"}
+                    {isThai ? "ระบบบริการที่ไร้รอยต่อ" : "Seamless Ecosystem"}
                   </span>
                 </div>
               </div>
@@ -392,13 +347,13 @@ export function PortalHero({
         </div>
       </div>
 
-      {/* ═══ AICM / FANCY Signature Infinite Marquee Ribbon ═══ */}
-      <div className="mt-14 pt-4 pb-4 border-y border-[var(--glass-border)]/80 bg-[var(--surface-sunken)]/40 backdrop-blur-md overflow-hidden select-none">
+      {/* ═══ Sunset Marquee Ribbon ═══ */}
+      <div className="mt-14 pt-4 pb-4 border-y border-[var(--glass-border)]/80 bg-[var(--surface-sunken)]/30 backdrop-blur-md overflow-hidden select-none">
         <div className="animate-hero-marquee whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems].map((item, idx) => (
             <span
               key={idx}
-              className="inline-flex items-center mx-6 text-xs font-bold tracking-wider uppercase text-muted-foreground/80 hover:text-foreground transition-colors"
+              className="inline-flex items-center mx-6 text-xs font-medium tracking-wider text-muted-foreground/80 hover:text-foreground transition-colors"
             >
               {item}
             </span>

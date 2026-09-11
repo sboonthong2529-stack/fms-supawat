@@ -70,40 +70,56 @@
   body { @apply bg-background text-foreground; }
 }
 
-/* ═══ AICM 3D Hero Animations & Utilities ═══ */
+/* ═══ Sunset & Wellness Hero Animations & Utilities (Orizon Lunera Style) ═══ */
 @keyframes hero-float-1 {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(1.5deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
 }
 
 @keyframes hero-float-2 {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(12px) rotate(-1.5deg); }
+  50% { transform: translateY(10px) rotate(-1deg); }
 }
 
 @keyframes hero-float-3 {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(-0.8deg); }
 }
 
 @keyframes hero-float-4 {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(11px) rotate(1.2deg); }
+  50% { transform: translateY(8px) rotate(0.8deg); }
 }
 
-@keyframes hero-orbit {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes sunset-sun-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.95;
+  }
 }
 
-@keyframes hero-orbit-reverse {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(0deg); }
+@keyframes sunset-ripple {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
 }
 
-@keyframes hero-pulse-glow {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(1.08); }
+@keyframes sunset-shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 @keyframes hero-marquee {
@@ -112,40 +128,41 @@
 }
 
 .animate-hero-float-1 {
-  animation: hero-float-1 6s ease-in-out infinite;
+  animation: hero-float-1 7s ease-in-out infinite;
 }
 
 .animate-hero-float-2 {
-  animation: hero-float-2 7s ease-in-out infinite 0.8s;
+  animation: hero-float-2 8s ease-in-out infinite 1s;
 }
 
 .animate-hero-float-3 {
-  animation: hero-float-3 6.5s ease-in-out infinite 1.5s;
+  animation: hero-float-3 7.5s ease-in-out infinite 1.8s;
 }
 
 .animate-hero-float-4 {
-  animation: hero-float-4 8s ease-in-out infinite 0.4s;
+  animation: hero-float-4 8.5s ease-in-out infinite 0.6s;
 }
 
-.animate-hero-orbit {
-  animation: hero-orbit 24s linear infinite;
+.animate-sunset-glow {
+  animation: sunset-sun-glow 8s ease-in-out infinite;
 }
 
-.animate-hero-orbit-reverse {
-  animation: hero-orbit-reverse 32s linear infinite;
+.animate-sunset-ripple {
+  animation: sunset-ripple 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 
-.animate-hero-pulse-glow {
-  animation: hero-pulse-glow 5s ease-in-out infinite;
+.animate-sunset-shimmer {
+  animation: sunset-shimmer 4s ease-in-out infinite;
 }
 
 .animate-hero-marquee {
   display: flex;
   width: max-content;
-  animation: hero-marquee 35s linear infinite;
+  animation: hero-marquee 40s linear infinite;
 }
 
 .animate-hero-marquee:hover {
   animation-play-state: paused;
 }
+
 

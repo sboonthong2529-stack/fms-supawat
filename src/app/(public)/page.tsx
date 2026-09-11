@@ -4,7 +4,7 @@ import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
 import { formatDate } from "@/shared/lib/format";
-import { auth } from "@/features/identity/server";
+import { auth, resolveTenantSettings } from "@/features/identity/server";
 import {
   listPublishedNewsArticles,
   getFeaturedNewsArticles,
@@ -24,7 +24,12 @@ import { PortalHero } from "./_components/portal-hero";
 export default async function PublicHomePage() {
   const t = await getT();
   const locale = await getLocale();
-  const session = await auth();
+  const session = await auth().catch(() => null);
+  const settings = await resolveTenantSettings();
+
+  const brandName = settings
+    ? (locale === "th" ? settings.nameTh : settings.nameEn)
+    : t("faculty.name");
 
   // ดึง Default Tenant
   const tenant = await prisma.tenant.findFirst({ where: { isActive: true } });
@@ -49,9 +54,11 @@ export default async function PublicHomePage() {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* 3D Animated Hero Section (AICM / Dribbble Style) */}
+      {/* Sunset Wellness Hero Section (Orizon Lunera Style) */}
       <PortalHero
         locale={locale}
+        brandName={brandName}
+        brandLogo={settings?.logoUrl}
         isLoggedIn={!!session?.user}
         navLabels={navLabels}
       />
