@@ -30,7 +30,7 @@ export async function uploadLogoAction(formData: FormData): Promise<ActionResult
       throw errors.validation("validation", { file: ["file_required"] });
     }
 
-    const MAX_SIZE = 2 * 1024 * 1024;
+    const MAX_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       throw errors.validation("validation", { file: ["file_too_large"] });
     }
