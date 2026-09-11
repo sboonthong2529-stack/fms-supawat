@@ -517,7 +517,7 @@ export function PersonnelClient({
 
           <DataTable
             state={filteredPersonnel.length ? "data" : "empty"}
-            headHeading={<h3 className="text-base font-semibold">{t("personnel.tabStaff")}</h3>}
+            headHeading={t("personnel.tabStaff")}
             columns={personnelColumns}
             rows={filteredPersonnel}
             getRowId={(row) => row.id}
@@ -553,7 +553,7 @@ export function PersonnelClient({
         <LiyonCard>
           <DataTable
             state={departments.length ? "data" : "empty"}
-            headHeading={<h3 className="text-base font-semibold">{t("personnel.tabDepts")}</h3>}
+            headHeading={t("personnel.tabDepts")}
             columns={departmentColumns}
             rows={departments}
             getRowId={(row) => row.id}

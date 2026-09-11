@@ -166,7 +166,7 @@ export function SampleClient({ initialItems, canManage }: Props) {
       <LiyonCard>
         <DataTable<SampleItemDto>
           state={items.length === 0 ? "empty" : "data"}
-          headHeading={<h3 className="text-base font-semibold">{t("sample.title")}</h3>}
+          headHeading={t("sample.title")}
           rows={items}
           columns={columns}
           getRowId={(row) => row.id}

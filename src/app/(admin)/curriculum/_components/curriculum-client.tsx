@@ -355,7 +355,7 @@ export function CurriculumClient({
         {/* Data Table */}
         <DataTable
           state={filteredPrograms.length ? "data" : "empty"}
-          headHeading={<h3 className="text-base font-semibold">{t("curriculum.tabs.programs")}</h3>}
+          headHeading={t("curriculum.tabs.programs")}
           columns={columns}
           rows={filteredPrograms}
           getRowId={(r: CurriculumProgramDto) => r.id}

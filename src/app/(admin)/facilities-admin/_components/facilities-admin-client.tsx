@@ -467,7 +467,7 @@ export function FacilitiesAdminClient({
 
           <DataTable
             state={filteredBookings.length ? "data" : "empty"}
-            headHeading={<h3 className="text-base font-semibold">{t("facilities.tabs.bookings")}</h3>}
+            headHeading={t("facilities.tabs.bookings")}
             columns={bookingColumns}
             rows={filteredBookings}
             getRowId={(r: FacilityBookingDto) => r.id}
@@ -532,7 +532,7 @@ export function FacilitiesAdminClient({
 
           <DataTable
             state={filteredFacilities.length ? "data" : "empty"}
-            headHeading={<h3 className="text-base font-semibold">{t("facilities.tabs.rooms")}</h3>}
+            headHeading={t("facilities.tabs.rooms")}
             columns={facilityColumns}
             rows={filteredFacilities}
             getRowId={(r: FacilityItemDto) => r.id}

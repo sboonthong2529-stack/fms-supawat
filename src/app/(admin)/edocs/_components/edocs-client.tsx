@@ -241,7 +241,7 @@ export function EdocsClient({ initialRequests, templates, canManage }: Props) {
         {/* Data Table */}
         <DataTable
           state={filteredRequests.length ? "data" : "empty"}
-          headHeading={<h3 className="text-base font-semibold">{t("edocs.tabs.requests")}</h3>}
+          headHeading={t("edocs.tabs.requests")}
           columns={columns}
           rows={filteredRequests}
           getRowId={(r: EdocRequestDto) => r.id}

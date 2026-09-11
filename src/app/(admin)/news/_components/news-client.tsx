@@ -333,7 +333,7 @@ export function NewsClient({ initialNews, canManage }: Props) {
 
         <DataTable
           state={filteredItems.length ? "data" : "empty"}
-          headHeading={<h3 className="text-base font-semibold">{t("news.title")}</h3>}
+          headHeading={t("news.title")}
           columns={columns}
           rows={filteredItems}
           getRowId={(row) => row.id}
