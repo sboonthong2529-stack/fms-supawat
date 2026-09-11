@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: fms-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-fms_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-FmsSecurePassword2026!}
+      POSTGRES_DB: ${DB_NAME:-fms_production}
+    volumes:
+      - fms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fms_admin} -d ${DB_NAME:-fms_production}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fms-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fms-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-3010}:3010"
+    environment:
+      NODE_ENV: production
+      PORT: 3010
+      HOSTNAME: "0.0.0.0"
+      DATABASE_URL: postgresql://${DB_USER:-fms_admin}:${DB_PASSWORD:-FmsSecurePassword2026!}@db:5432/${DB_NAME:-fms_production}
+      AUTH_SECRET: ${AUTH_SECRET:-kGEh4a2KMCrJq/fFxu7rnCHy+EI7y1c0dPzY5tXzV5Y=}
+      APP_URL: ${APP_URL:-http://localhost:3010}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@app.local}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-Passw0rd!vibe}
+    volumes:
+      - fms_uploads:/app/public/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3010/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+    networks:
+      - fms-net
+
+volumes:
+  fms_pgdata:
+    name: fms_pgdata
+  fms_uploads:
+    name: fms_uploads
+
+networks:
+  fms-net:
+    name: fms-net
+    driver: bridge
