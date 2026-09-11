@@ -2,34 +2,145 @@ import { cache } from "react";
 import { prisma, type Db } from "@/shared/lib/infra/prisma";
 import { DEFAULT_PALETTE, isPalette, type PaletteId } from "@/shared/lib/palette";
 import { errors } from "@/shared/lib/errors";
+import { encryptSecret, decryptSecret } from "@/shared/lib/security/crypto";
 import { writeAudit } from "../audit";
 import type { UpdateSettingsInput } from "../validations/settings";
 
-export interface TenantSettings { code: string; nameTh: string; nameEn: string; logoUrl: string | null; palette: PaletteId }
+export interface TenantSmtpSettings {
+  enabled: boolean;
+  user: string;
+  hasPassword: boolean;
+  senderName: string;
+  port: number;
+  secure: boolean;
+}
+
+export interface TenantSettings {
+  code: string;
+  nameTh: string;
+  nameEn: string;
+  logoUrl: string | null;
+  palette: PaletteId;
+  smtp: TenantSmtpSettings;
+}
+
+export interface DecryptedTenantSmtp {
+  enabled: boolean;
+  user: string;
+  pass: string;
+  senderName: string;
+  port: number;
+  secure: boolean;
+}
 
 async function readTenantSettings(tenantId: string, db: Db): Promise<TenantSettings> {
   const t = await db.tenant.findUnique({ where: { id: tenantId } });
   if (!t) throw errors.not_found();
-  const p = (t.settings as { palette?: unknown }).palette;
-  return { code: t.code, nameTh: t.nameTh, nameEn: t.nameEn, logoUrl: t.logoUrl, palette: isPalette(p) ? p : DEFAULT_PALETTE };
+  const settingsObj = (t.settings as {
+    palette?: unknown;
+    smtp?: {
+      enabled?: boolean;
+      user?: string;
+      password?: string;
+      senderName?: string;
+      port?: number;
+      secure?: boolean;
+    };
+  }) || {};
+
+  const p = settingsObj.palette;
+  const rawSmtp = settingsObj.smtp;
+
+  return {
+    code: t.code,
+    nameTh: t.nameTh,
+    nameEn: t.nameEn,
+    logoUrl: t.logoUrl,
+    palette: isPalette(p) ? p : DEFAULT_PALETTE,
+    smtp: {
+      enabled: rawSmtp?.enabled ?? false,
+      user: rawSmtp?.user ?? "",
+      hasPassword: Boolean(rawSmtp?.password),
+      senderName: rawSmtp?.senderName ?? "",
+      port: rawSmtp?.port ?? 465,
+      secure: rawSmtp?.secure ?? true,
+    },
+  };
 }
 
 export async function getTenantSettings(tenantId: string): Promise<TenantSettings> {
   return readTenantSettings(tenantId, prisma);
 }
 
-/** เก็บคีย์อื่น ๆ ใน settings JSON ไว้ทั้งหมด — merge เฉพาะ palette ที่เปลี่ยน ไม่ทับทั้งก้อน */
+/** เก็บคีย์อื่น ๆ ใน settings JSON ไว้ทั้งหมด — merge เฉพาะ palette และ smtp ที่เปลี่ยน ไม่ทับทั้งก้อน */
 export async function updateTenantSettings(input: { tenantId: string; actorId: string } & UpdateSettingsInput): Promise<void> {
   await prisma.$transaction(async (tx) => {
-    // อ่านผ่าน tx เดียวกัน ไม่ใช่ client กลาง — ไม่งั้นทรานแซกชันนี้กินคอนเนกชันจากพูลเพิ่มอีกเส้นเพื่ออ่าน
-    // ค่าเดิม และค่าที่อ่านได้ก็อยู่นอกสแนปช็อตของทรานแซกชัน (ค่า before ของ audit อาจไม่ตรงกับที่กำลังจะทับ)
     const before = await readTenantSettings(input.tenantId, tx);
     const t = await tx.tenant.findUniqueOrThrow({ where: { id: input.tenantId }, select: { settings: true } });
+    const prevSettings = (t.settings as {
+      palette?: unknown;
+      smtp?: {
+        enabled?: boolean;
+        user?: string;
+        password?: string;
+        senderName?: string;
+        port?: number;
+        secure?: boolean;
+      };
+    }) || {};
+
+    let encryptedPassword = prevSettings.smtp?.password || "";
+    if (input.smtp?.password) {
+      encryptedPassword = encryptSecret(input.smtp.password);
+    }
+
+    const updatedSmtp = input.smtp
+      ? {
+          enabled: input.smtp.enabled,
+          user: input.smtp.user,
+          password: encryptedPassword,
+          senderName: input.smtp.senderName,
+          port: input.smtp.port,
+          secure: input.smtp.secure,
+        }
+      : prevSettings.smtp;
+
     await tx.tenant.update({
       where: { id: input.tenantId },
-      data: { nameTh: input.nameTh, nameEn: input.nameEn, logoUrl: input.logoUrl || null, settings: { ...(t.settings as object), palette: input.palette } },
+      data: {
+        nameTh: input.nameTh,
+        nameEn: input.nameEn,
+        logoUrl: input.logoUrl || null,
+        settings: {
+          ...prevSettings,
+          palette: input.palette,
+          smtp: updatedSmtp,
+        },
+      },
     });
-    await writeAudit({ tenantId: input.tenantId, actorId: input.actorId, action: "tenant.settings_update", entity: "tenant", entityId: input.tenantId, before, after: input }, tx);
+
+    const auditAfter = {
+      ...input,
+      smtp: input.smtp
+        ? {
+            ...input.smtp,
+            password: input.smtp.password ? "[REDACTED]" : undefined,
+          }
+        : undefined,
+    };
+
+    await writeAudit(
+      {
+        tenantId: input.tenantId,
+        actorId: input.actorId,
+        action: "tenant.settings_update",
+        entity: "tenant",
+        entityId: input.tenantId,
+        before,
+        after: auditAfter,
+      },
+      tx
+    );
   });
 }
 
@@ -39,12 +150,35 @@ export async function getTenantPalette(tenantId: string): Promise<PaletteId> {
   return isPalette(p) ? p : DEFAULT_PALETTE;
 }
 
-/**
- * tenant ของ session ถ้ามี — import แบบ dynamic เพราะ `../auth` ดึง next-auth ทั้งก้อนเข้ามา และ
- * โมดูลนี้ถูก import จาก root layout ที่รันทุก request · แยก try ของตัวเองไว้ต่างหากโดยเจตนา: เดิมมันอยู่
- * ใน try เดียวกับการอ่านฐานข้อมูล ทำให้ "โหลด auth ไม่ได้" กับ "ฐานข้อมูลล้ม" กลืนหายไปเป็นค่าเดียวกัน
- * และเส้นทางอ่าน tenant ทั้งเส้นทดสอบไม่ได้เลย (ในสภาพแวดล้อมเทสต์ next-auth resolve ไม่ผ่าน)
- */
+/** ดึงข้อมูลการตั้งค่า SMTP สำหรับ Mailer (ถอดรหัสผ่านพร้อมใช้งาน) */
+export async function getTenantSmtpConfig(tenantId?: string): Promise<DecryptedTenantSmtp | null> {
+  const t = tenantId
+    ? await prisma.tenant.findUnique({ where: { id: tenantId }, select: { settings: true } })
+    : await prisma.tenant.findFirst({ where: { isActive: true }, orderBy: { createdAt: "asc" }, select: { settings: true } });
+
+  const rawSmtp = (t?.settings as {
+    smtp?: {
+      enabled?: boolean;
+      user?: string;
+      password?: string;
+      senderName?: string;
+      port?: number;
+      secure?: boolean;
+    };
+  } | null)?.smtp;
+
+  if (!rawSmtp || !rawSmtp.enabled || !rawSmtp.user) return null;
+
+  return {
+    enabled: Boolean(rawSmtp.enabled),
+    user: rawSmtp.user,
+    pass: decryptSecret(rawSmtp.password || ""),
+    senderName: rawSmtp.senderName || "",
+    port: rawSmtp.port || 465,
+    secure: rawSmtp.secure ?? (rawSmtp.port === 465),
+  };
+}
+
 async function sessionTenantId(): Promise<string | null> {
   try {
     const { auth } = await import("../auth");
@@ -54,7 +188,6 @@ async function sessionTenantId(): Promise<string | null> {
   }
 }
 
-/** ใช้โดย root layout ทุก request — tenant จาก session ถ้ามี ไม่งั้น tenant แรก (หน้า login ยังไม่มี session) · ไม่ throw */
 export const resolvePalette = cache(async (): Promise<PaletteId> => {
   try {
     const tenantId = (await sessionTenantId()) || (await prisma.tenant.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } }))?.id;
@@ -64,7 +197,6 @@ export const resolvePalette = cache(async (): Promise<PaletteId> => {
   }
 });
 
-/** ใช้โดย layouts เพื่ออ่านการตั้งค่าองค์กร/โลโก้ — tenant จาก session ถ้ามี ไม่งั้น tenant แรก · ไม่ throw */
 export const resolveTenantSettings = cache(async (): Promise<TenantSettings | null> => {
   try {
     const tenantId = (await sessionTenantId()) || (await prisma.tenant.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } }))?.id;

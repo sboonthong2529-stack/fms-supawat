@@ -5,8 +5,9 @@ import { getLocale } from "@/shared/lib/i18n/server";
 import { zodErrorMap } from "@/shared/lib/i18n/zod-locale";
 import { P } from "../../permissions";
 import { requirePermission } from "../rbac";
-import { updateSettingsSchema } from "../validations/settings";
-import { getTenantSettings, updateTenantSettings, type TenantSettings } from "../services/tenant.service";
+import { updateSettingsSchema, testSmtpSchema } from "../validations/settings";
+import { getTenantSettings, updateTenantSettings, getTenantSmtpConfig, type TenantSettings } from "../services/tenant.service";
+import { verifyAndSendTestMail } from "@/shared/lib/infra/mailer";
 
 import path from "node:path";
 import fs from "node:fs";
@@ -15,6 +16,7 @@ import { errors } from "@/shared/lib/errors";
 export async function getSettingsAction(): Promise<ActionResult<TenantSettings>> {
   return runAction(async () => getTenantSettings((await requirePermission(P.settingsManage)).tenantId));
 }
+
 export async function updateSettingsAction(input: unknown): Promise<ActionResult<void>> {
   return runAction(async () => {
     const ctx = await requirePermission(P.settingsManage);
@@ -22,6 +24,41 @@ export async function updateSettingsAction(input: unknown): Promise<ActionResult
     revalidatePath("/", "layout"); // data-palette บน <html> อ่านใหม่
   });
 }
+
+export async function testSmtpAction(input: unknown): Promise<ActionResult<{ success: boolean; error?: string }>> {
+  return runAction(async () => {
+    const ctx = await requirePermission(P.settingsManage);
+    const data = testSmtpSchema.parse(input, { error: zodErrorMap(await getLocale()) });
+
+    let password = data.password;
+    if (!password) {
+      // ดึงรหัสผ่านที่เคยบันทึกไว้ใน Tenant settings หากไม่ได้กรอกใหม่
+      const config = await getTenantSmtpConfig(ctx.tenantId);
+      password = config?.pass || "";
+    }
+
+    if (!password) {
+      throw errors.validation("validation", { password: ["password_required"] });
+    }
+
+    const res = await verifyAndSendTestMail({
+      host: "smtp.gmail.com",
+      port: data.port,
+      secure: data.secure,
+      user: data.user,
+      pass: password,
+      senderName: data.senderName,
+      targetEmail: data.targetEmail,
+    });
+
+    if (!res.success) {
+      throw errors.validation(res.error || "smtp_test_failed");
+    }
+
+    return { success: true };
+  });
+}
+
 export async function uploadLogoAction(formData: FormData): Promise<ActionResult<{ url: string }>> {
   return runAction(async () => {
     const ctx = await requirePermission(P.settingsManage);
