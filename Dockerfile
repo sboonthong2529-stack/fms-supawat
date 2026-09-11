@@ -19,7 +19,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
-ENV AUTH_SECRET="kGEh4a2KMCrJq/fFxu7rnCHy+EI7y1c0dPzY5tXzV5Y="
+ENV AUTH_SECRET="build_placeholder_secret_minimum_16_characters"
 ENV APP_URL="http://localhost:3010"
 
 RUN npx prisma generate
