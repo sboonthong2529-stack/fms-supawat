@@ -27,6 +27,8 @@ export default async function PublicLayout({
     requests: t("edocs.publicTitle"),
     facilities: t("facilities.publicTitle"),
     dashboard: t("nav.dashboard"),
+    profile: t("account.profile"),
+    logout: t("account.logout"),
     login: locale === "th" ? "เข้าสู่ระบบบุคลากร" : "Staff Login",
     themeToggle: t("nav.themeToggle"),
   };
