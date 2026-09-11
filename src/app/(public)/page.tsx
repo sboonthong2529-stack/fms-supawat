@@ -4,6 +4,7 @@ import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
 import { formatDate } from "@/shared/lib/format";
+import { auth } from "@/features/identity/server";
 import {
   listPublishedNewsArticles,
   getFeaturedNewsArticles,
@@ -16,13 +17,14 @@ import {
   BookOpen,
   Users,
   Award,
-  Sparkles,
   Newspaper,
 } from "lucide-react";
+import { PortalHero } from "./_components/portal-hero";
 
 export default async function PublicHomePage() {
   const t = await getT();
   const locale = await getLocale();
+  const session = await auth();
 
   // ดึง Default Tenant
   const tenant = await prisma.tenant.findFirst({ where: { isActive: true } });
@@ -37,61 +39,22 @@ export default async function PublicHomePage() {
 
   const latestNews = latestNewsResult.items;
 
+  const navLabels = {
+    announcements: t("news.portal.title"),
+    programs: t("curriculum.publicTitle"),
+    services: locale === "th" ? "บริการสำหรับบุคลากร" : "Staff Services",
+    dashboard: t("nav.dashboard"),
+    login: locale === "th" ? "เข้าสู่ระบบบุคลากร" : "Staff Login",
+  };
+
   return (
     <div className="space-y-16 pb-20">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-primary/5 via-background to-background py-20 md:py-28">
-        <div className="container mx-auto px-4 sm:px-6 text-center space-y-6 max-w-4xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>
-              {locale === "th"
-                ? "เปิดรับสมัครนักศึกษาใหม่ ประจำปีการศึกษา 2569"
-                : "Now Accepting Applications for Academic Year 2026"}
-            </span>
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            {locale === "th" ? (
-              <>
-                มุ่งสู่อนาคตด้วย{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
-                  เทคโนโลยีและนวัตกรรม
-                </span>
-              </>
-            ) : (
-              <>
-                Shaping the Future with{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
-                  Technology & Innovation
-                </span>
-              </>
-            )}
-          </h1>
-
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {locale === "th"
-              ? "ศูนย์รวมความเป็นเลิศทางวิชาการและการวิจัยชั้นนำ ผลิตบัณฑิตคุณภาพสูงที่ตอบสนองการเปลี่ยนแปลงของโลกดิจิทัล"
-              : "Center of excellence in research and technology education, preparing world-class graduates for the digital future."}
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Link
-              href="/announcements"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-all"
-            >
-              <span>{t("news.portal.title")}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm hover:bg-accent transition-all"
-            >
-              <span>{locale === "th" ? "บริการสำหรับบุคลากร" : "Staff Services"}</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 3D Animated Hero Section (AICM / Dribbble Style) */}
+      <PortalHero
+        locale={locale}
+        isLoggedIn={!!session?.user}
+        navLabels={navLabels}
+      />
 
       {/* Featured / Pinned News Banner */}
       {featuredNews.length > 0 && (
