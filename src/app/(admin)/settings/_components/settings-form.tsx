@@ -18,6 +18,7 @@ export function SettingsForm({ initial }: { initial: TenantSettings }) {
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [pending, start] = useTransition();
   const [uploading, setUploading] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -37,6 +38,7 @@ export function SettingsForm({ initial }: { initial: TenantSettings }) {
     setUploading(false);
 
     if (res.ok) {
+      setImgError(false);
       setForm((prev) => ({ ...prev, logoUrl: res.data.url }));
       toast.success(t("settings.uploadSuccess"));
     } else {
@@ -71,19 +73,30 @@ export function SettingsForm({ initial }: { initial: TenantSettings }) {
               <div className="space-y-3 pt-1">
                 <div className="flex flex-wrap items-center gap-4">
                   {form.logoUrl ? (
-                    <div className="relative h-16 w-36 rounded-xl border border-border bg-muted/30 p-1 flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={form.logoUrl}
-                        alt="Logo"
-                        width={130}
-                        height={55}
-                        className="max-h-full max-w-full object-contain"
-                        unoptimized
-                      />
+                    <div className="relative h-16 w-36 rounded-xl border border-border bg-muted/30 p-1 flex items-center justify-center">
+                      {imgError ? (
+                        <div className="flex flex-col items-center justify-center text-center px-2">
+                          <span className="text-[10px] text-destructive font-medium">รูปภาพไม่สามารถแสดงได้</span>
+                          <span className="text-[9px] text-muted-foreground">โปรดลองอัปโหลดใหม่</span>
+                        </div>
+                      ) : (
+                        <Image
+                          src={form.logoUrl}
+                          alt="Logo"
+                          width={130}
+                          height={55}
+                          className="max-h-full max-w-full object-contain"
+                          unoptimized
+                          onError={() => setImgError(true)}
+                        />
+                      )}
                       <button
                         type="button"
-                        onClick={() => setForm({ ...form, logoUrl: "" })}
-                        className="absolute -top-1 -right-1 rounded-full bg-destructive text-destructive-foreground p-1 shadow hover:bg-destructive/90 transition-colors"
+                        onClick={() => {
+                          setImgError(false);
+                          setForm({ ...form, logoUrl: "" });
+                        }}
+                        className="absolute top-1 right-1 rounded-full bg-destructive text-destructive-foreground p-1 shadow-md hover:bg-destructive/90 transition-colors z-10"
                         title={t("settings.removeLogo")}
                       >
                         <Trash2 className="h-3 w-3" />
@@ -133,7 +146,10 @@ export function SettingsForm({ initial }: { initial: TenantSettings }) {
                   type="text"
                   placeholder="https://... หรือ /uploads/logos/..."
                   value={form.logoUrl}
-                  onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
+                  onChange={(e) => {
+                    setImgError(false);
+                    setForm({ ...form, logoUrl: e.target.value });
+                  }}
                   className="w-full text-xs"
                 />
               </div>
