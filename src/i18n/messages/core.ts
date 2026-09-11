@@ -57,4 +57,12 @@ export const MESSAGES: Dictionary = {
   "dash.activeUsers": { th: "ผู้ใช้ที่ใช้งาน", en: "Active users" },
   "dash.roles": { th: "บทบาท", en: "Roles" },
   "dash.welcome": { th: "ยินดีต้อนรับ {name}", en: "Welcome, {name}" },
+  "faculty.name": { th: "คณะเทคโนโลยีและนวัตกรรมดิจิทัล", en: "Faculty of Technology & Digital Innovation" },
+  "faculty.subtitle": { th: "มหาวิทยาลัยแห่งการเรียนรู้และการวิจัย", en: "University of Learning & Innovation" },
+  "public.notFound.title": { th: "ไม่พบหน้าที่ต้องการ", en: "Page Not Found" },
+  "public.notFound.desc": { th: "หน้าที่คุณกำลังค้นหาอาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่อีกต่อไป", en: "The page you are looking for might have been moved, renamed, or is temporarily unavailable." },
+  "public.notFound.backHome": { th: "กลับสู่หน้าแรก", en: "Back to Home" },
+  "public.error.title": { th: "เกิดข้อผิดพลาดในการโหลดหน้าเว็บ", en: "Something went wrong" },
+  "public.error.desc": { th: "ระบบพบปัญหาชั่วคราว กรุณาลองใหม่อีกครั้ง", en: "A temporary error occurred while rendering this page. Please try again." },
+  "public.error.retry": { th: "ลองใหม่อีกครั้ง", en: "Try Again" },
 };

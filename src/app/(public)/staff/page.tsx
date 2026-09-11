@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
@@ -8,6 +10,14 @@ import {
 } from "@/features/personnel/server";
 import { Search, Mail, Phone, MapPin, Award, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: `${t("personnel.portal.title")} | Faculty of Technology & Innovation`,
+    description: t("personnel.portal.subtitle"),
+  };
+}
 
 interface Props {
   searchParams: Promise<{
@@ -120,10 +130,13 @@ export default async function StaffDirectoryPage({ searchParams }: Props) {
                 >
                   <div className="relative h-32 w-32 rounded-full overflow-hidden border-2 border-primary/20 bg-muted shadow-inner">
                     {exec.avatarUrl ? (
-                      <img
+                      <Image
                         src={exec.avatarUrl}
                         alt={exec.fullNameTh}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="128px"
+                        className="object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
@@ -214,10 +227,13 @@ export default async function StaffDirectoryPage({ searchParams }: Props) {
                   <div className="flex items-start gap-4">
                     <div className="relative h-20 w-20 flex-shrink-0 rounded-2xl overflow-hidden border border-border bg-muted">
                       {person.avatarUrl ? (
-                        <img
+                        <Image
                           src={person.avatarUrl}
                           alt={person.fullNameTh}
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary font-bold text-xl">

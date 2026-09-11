@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
@@ -113,10 +114,13 @@ export default async function PublicHomePage() {
               >
                 {news.coverImageUrl ? (
                   <div className="relative aspect-video w-full overflow-hidden bg-muted">
-                    <img
+                    <Image
                       src={news.coverImageUrl}
                       alt={news.titleTh}
-                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      unoptimized
                     />
                   </div>
                 ) : (

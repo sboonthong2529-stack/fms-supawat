@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { Plus, Edit2, Trash2, Users, Building, Search, Award } from "lucide-react";
 import { toast } from "sonner";
 import { useT, useLocale } from "@/shared/lib/i18n/client";
@@ -315,7 +316,7 @@ export function PersonnelClient({
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full overflow-hidden bg-muted flex items-center justify-center font-bold text-xs text-primary flex-shrink-0">
             {row.avatarUrl ? (
-              <img src={row.avatarUrl} alt={row.fullNameTh} className="h-full w-full object-cover" />
+              <Image src={row.avatarUrl} alt={row.fullNameTh} width={36} height={36} className="h-full w-full object-cover" unoptimized />
             ) : (
               row.firstNameTh.charAt(0)
             )}

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
@@ -5,6 +7,14 @@ import { getLocale } from "@/shared/lib/i18n/server";
 import { formatDate } from "@/shared/lib/format";
 import { listPublishedNewsArticles } from "@/features/news/server";
 import { Search, Calendar, Eye, Newspaper, ArrowRight } from "lucide-react";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: `${t("news.portal.title")} | Faculty of Technology & Innovation`,
+    description: t("news.portal.subtitle"),
+  };
+}
 
 interface Props {
   searchParams: Promise<{
@@ -113,10 +123,13 @@ export default async function AnnouncementsPage({ searchParams }: Props) {
             >
               {item.coverImageUrl ? (
                 <div className="relative aspect-video w-full overflow-hidden bg-muted">
-                  <img
+                  <Image
                     src={item.coverImageUrl}
                     alt={item.titleTh}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    unoptimized
                   />
                 </div>
               ) : (

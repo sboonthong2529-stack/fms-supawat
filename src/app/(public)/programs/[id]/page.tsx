@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
@@ -18,6 +19,24 @@ import {
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const locale = await getLocale();
+  const tenant = await prisma.tenant.findFirst({ where: { isActive: true } });
+  if (!tenant) return { title: "Program" };
+
+  const program = await getPublicProgramDetail(tenant.id, id);
+  if (!program) return { title: "Program Not Found" };
+
+  const progName = locale === "th" ? program.nameTh : program.nameEn;
+  const degreeName = locale === "th" ? program.degreeNameTh : program.degreeNameEn;
+
+  return {
+    title: `${progName} (${degreeName}) | Faculty of Technology & Innovation`,
+    description: locale === "th" ? program.descriptionTh : program.descriptionEn,
+  };
 }
 
 export default async function PublicProgramDetailPage({ params }: Props) {

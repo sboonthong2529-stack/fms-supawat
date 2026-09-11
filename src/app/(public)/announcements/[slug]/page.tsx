@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/shared/lib/infra/prisma";
@@ -11,6 +13,24 @@ interface Props {
   params: Promise<{
     slug: string;
   }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const locale = await getLocale();
+  const tenant = await prisma.tenant.findFirst({ where: { isActive: true } });
+  if (!tenant) return { title: "News" };
+
+  const article = await getNewsArticleBySlug(tenant.id, slug);
+  if (!article) return { title: "Not Found" };
+
+  const title = locale === "th" ? article.titleTh : article.titleEn;
+  const description = locale === "th" ? article.summaryTh : article.summaryEn;
+
+  return {
+    title: `${title} | Faculty of Technology & Innovation`,
+    description: description || undefined,
+  };
 }
 
 export default async function NewsDetailPage({ params }: Props) {
@@ -76,10 +96,14 @@ export default async function NewsDetailPage({ params }: Props) {
       {/* Cover Image */}
       {article.coverImageUrl ? (
         <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-border shadow-sm">
-          <img
+          <Image
             src={article.coverImageUrl}
             alt={mainTitle}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="object-cover"
+            priority
+            unoptimized
           />
         </div>
       ) : (

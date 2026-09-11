@@ -26,10 +26,10 @@ export default async function PublicLayout({
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-base leading-tight tracking-tight text-foreground">
-                  {locale === "th" ? "คณะเทคโนโลยีและนวัตกรรม" : "Faculty of Technology & Innovation"}
+                  {t("faculty.name")}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {locale === "th" ? "มหาวิทยาลัยแห่งการเรียนรู้" : "University Portal"}
+                  {t("faculty.subtitle")}
                 </span>
               </div>
             </Link>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { prisma } from "@/shared/lib/infra/prisma";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
@@ -13,6 +14,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: `${t("curriculum.publicTitle")} | Faculty of Technology & Innovation`,
+    description: t("curriculum.publicSubtitle"),
+  };
+}
 
 interface Props {
   searchParams: Promise<{
