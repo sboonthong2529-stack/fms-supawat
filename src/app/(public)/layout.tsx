@@ -1,7 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getT } from "@/i18n/server";
 import { getLocale } from "@/shared/lib/i18n/server";
-import { auth } from "@/features/identity/server";
+import { auth, resolveTenantSettings } from "@/features/identity/server";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { GraduationCap, LogIn, LayoutDashboard } from "lucide-react";
 
@@ -13,6 +14,10 @@ export default async function PublicLayout({
   const t = await getT();
   const locale = await getLocale();
   const session = await auth().catch(() => null);
+  const settings = await resolveTenantSettings();
+
+  const brandName = settings ? (locale === "th" ? settings.nameTh : settings.nameEn) : t("faculty.name");
+  const brandSubtitle = settings ? (locale === "th" ? settings.nameEn : settings.nameTh) : t("faculty.subtitle");
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -21,15 +26,26 @@ export default async function PublicLayout({
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                <GraduationCap className="h-6 w-6" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm overflow-hidden p-1">
+                {settings?.logoUrl ? (
+                  <Image
+                    src={settings.logoUrl}
+                    alt={brandName}
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-contain"
+                    unoptimized
+                  />
+                ) : (
+                  <GraduationCap className="h-6 w-6" />
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-base leading-tight tracking-tight text-foreground">
-                  {t("faculty.name")}
+                  {brandName}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {t("faculty.subtitle")}
+                  {brandSubtitle}
                 </span>
               </div>
             </Link>
@@ -106,11 +122,22 @@ export default async function PublicLayout({
         <div className="container mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3 md:col-span-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-5 w-5" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground overflow-hidden p-0.5">
+                {settings?.logoUrl ? (
+                  <Image
+                    src={settings.logoUrl}
+                    alt={brandName}
+                    width={32}
+                    height={32}
+                    className="h-full w-full object-contain"
+                    unoptimized
+                  />
+                ) : (
+                  <GraduationCap className="h-5 w-5" />
+                )}
               </div>
               <span className="font-bold text-base text-foreground">
-                {locale === "th" ? "คณะเทคโนโลยีและนวัตกรรม" : "Faculty of Technology & Innovation"}
+                {brandName}
               </span>
             </div>
             <p className="text-xs leading-relaxed max-w-md">

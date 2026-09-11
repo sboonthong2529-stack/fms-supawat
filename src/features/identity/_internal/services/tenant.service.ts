@@ -63,3 +63,13 @@ export const resolvePalette = cache(async (): Promise<PaletteId> => {
     return DEFAULT_PALETTE;
   }
 });
+
+/** ใช้โดย layouts เพื่ออ่านการตั้งค่าองค์กร/โลโก้ — tenant จาก session ถ้ามี ไม่งั้น tenant แรก · ไม่ throw */
+export const resolveTenantSettings = cache(async (): Promise<TenantSettings | null> => {
+  try {
+    const tenantId = (await sessionTenantId()) || (await prisma.tenant.findFirst({ orderBy: { createdAt: "asc" }, select: { id: true } }))?.id;
+    return tenantId ? await getTenantSettings(tenantId) : null;
+  } catch {
+    return null;
+  }
+});
