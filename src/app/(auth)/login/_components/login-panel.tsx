@@ -6,7 +6,13 @@ import { BrandMarkIcon } from "../../_components/icons";
 import { PasswordLoginForm } from "./password-login-form";
 import { OAuthButtons } from "./oauth-buttons";
 
-export function LoginPanel({ providers }: { providers: ("google" | "microsoft")[] }) {
+export function LoginPanel({
+  providers = ["google"],
+  googleConfigured = false,
+}: {
+  providers?: ("google" | "microsoft")[];
+  googleConfigured?: boolean;
+}) {
   const t = useT();
   const error = useSearchParams().get("error");
   return (
@@ -18,12 +24,8 @@ export function LoginPanel({ providers }: { providers: ("google" | "microsoft")[
       {error === "NoEmail" && <p className="err" role="alert">{t("auth.oauthNoEmail")}</p>}
       <PasswordLoginForm />
       <div className="auth-foot"><p><Link href="/forgot-password">{t("auth.forgot")}</Link></p></div>
-      {providers.length > 0 && (
-        <>
-          <div className="or"><span>{t("auth.orContinueWith")}</span></div>
-          <OAuthButtons providers={providers} />
-        </>
-      )}
+      <div className="or"><span>{t("auth.orContinueWith")}</span></div>
+      <OAuthButtons providers={providers} googleConfigured={googleConfigured} />
     </div>
   );
 }

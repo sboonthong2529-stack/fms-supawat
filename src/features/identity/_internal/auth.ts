@@ -13,12 +13,15 @@ import { passwordHashFor, DUMMY_PASSWORD_HASH } from "./password-select";
 
 export type OAuthProviderId = "google" | "microsoft";
 
-/** ปุ่ม OAuth โผล่เฉพาะเมื่อ env ครบ — ไม่ลงทะเบียน provider ที่ไม่มี credential */
+/** ปุ่ม OAuth: แสดง Google เสมอ เพื่อให้ผู้ใช้ทุกคนเห็นช่องทางเข้าสู่ระบบ */
 export function oauthProviderIds(): OAuthProviderId[] {
-  const ids: OAuthProviderId[] = [];
-  if (googleOAuthConfigured()) ids.push("google");
+  const ids: OAuthProviderId[] = ["google"];
   if (microsoftOAuthConfigured()) ids.push("microsoft");
   return ids;
+}
+
+export function isGoogleOAuthConfigured(): boolean {
+  return googleOAuthConfigured();
 }
 
 function clientIp(req: Request | undefined): string | null {
